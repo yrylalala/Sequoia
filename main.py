@@ -6,6 +6,9 @@ import work_flow
 import settings
 import schedule
 import time
+import datetime
+import os
+import shutil
 
 
 def job():
@@ -13,7 +16,18 @@ def job():
         work_flow.process()
 
 
-logging.basicConfig(format='%(asctime)s %(message)s', filename='sequoia.log')
+# 指定输入位置
+log_file_path = './' + datetime.date.today().strftime('%m%d')
+if not os.path.exists(log_file_path):
+    os.makedirs(log_file_path)
+else:
+    shutil.rmtree(log_file_path)
+    os.makedirs(log_file_path)
+
+if os.path.exists('./data'):
+    shutil.rmtree('./data')
+
+logging.basicConfig(format='%(asctime)s %(message)s', filename=log_file_path + '/sequoia.log', filemode='w')
 logging.getLogger().setLevel(logging.INFO)
 settings.init()
 
@@ -26,3 +40,4 @@ if settings.config['cron']:
         time.sleep(1)
 else:
     work_flow.process()
+    work_flow.statistical_result()
